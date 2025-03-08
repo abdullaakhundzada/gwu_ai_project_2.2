@@ -39,7 +39,7 @@ class NQueensSolver:
             
         self.size = board_size
         self.all_positions = range(board_size)
-        self.domains = {row: list(self.all_positions) for row in self.all_positions}
+        self.domains = {row: set(self.all_positions) for row in self.all_positions}
         self.assignment: dict[int, int] = {}
 
     def solve(self) -> Optional[dict[int, int]]:
@@ -52,12 +52,12 @@ class NQueensSolver:
         self.assignment = {}  # Reset assignment for multiple runs with single object
         return self._backtrack_with_ac3(self.domains)
 
-    def _backtrack_with_ac3(self, current_domains: dict[int, list[int]]) -> Optional[dict[int, int]]:
+    def _backtrack_with_ac3(self, current_domains: dict[int, set[int]]) -> Optional[dict[int, int]]:
         """
         Recursive backtracking search with AC3 constraint propagation.
 
         Args:
-            current_domains: dict[int, list[int]]
+            current_domains: dict[int, set[int]]
                 Available values for unassigned variables
 
         Returns:
@@ -83,7 +83,7 @@ class NQueensSolver:
                 revised_domains = self._enforce_arc_consistency(local_domains)
                 
                 if revised_domains:  # No domain wipeout occurred
-                    next_domains = {r: list(domain) for r, domain in revised_domains.items()}
+                    next_domains = {r: set(domain) for r, domain in revised_domains.items()}
                     result = self._backtrack_with_ac3(next_domains)
                     if result:
                         return result
@@ -93,7 +93,7 @@ class NQueensSolver:
 
         return None
 
-    def _select_unassigned_variable(self, domains: dict[int, list[int]]) -> Optional[int]:
+    def _select_unassigned_variable(self, domains: dict[int, set[int]]) -> Optional[int]:
         """
         Select an unassigned variable (row) using the Minimum Remaining Values (MRV) heuristic.
         
